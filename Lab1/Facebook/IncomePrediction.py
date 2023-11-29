@@ -2,21 +2,35 @@ import pandas as pd
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
-allData = pd.read_csv('Data/Income.csv')
+incomeData = pd.read_csv('Data/Income.csv')
+revenueData = pd.read_csv('Data/Revenue.csv')
+numberOfEmployeesData = pd.read_csv('Data/NumberOfEmployees.csv')
+numberOfUsersData = pd.read_csv('Data/NumberOfUsers.csv')
+filtredNumberOfUsersData = numberOfUsersData[numberOfUsersData['Quarter'] == 4][['Year', 'Users_in_mln']].copy()
+
+allData = incomeData.copy()
+allData = pd.merge(allData, revenueData, how='outer', on='Year')
+allData = pd.merge(allData, numberOfEmployeesData, how='outer', on='Year' )
+allData = pd.merge(allData, filtredNumberOfUsersData[['Year', 'Users_in_mln']], how='outer', on='Year' )
 
 # Train model ---------------------------------------------------------------
-def TrainModels(yearFrom, yearTo):
+def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     global fit
     global exponentialModel
     global powerModel
     global polynomialModel
     global linearModel
+    global independentVariableName
+    global dependentVariableName
 
-    print("Trenowanie modelu dla lat" , yearFrom , "-", yearTo, "...\n")
+    independentVariableName = variableFrom
+    dependentVariableName = variableTo
+
+    print("Trenowanie modelu dla lat" , yearFrom , "-", yearTo, "ze zmienną objaśniającą: ", independentVariableName, "na zminną objaśnianą: ", dependentVariableName, "...\n")
     trainData = allData[(allData['Year'] >= yearFrom) & (allData['Year'] <= yearTo)].copy()
 
-    trainX = trainData['Year'].values
-    trainValues = trainData['Income_in_mln'].values
+    trainX = trainData[independentVariableName].values
+    trainValues = trainData[dependentVariableName].values
     fit = np.polyfit(trainX, np.log(trainValues), 1)
 
     exponentialModel = LinearRegression() 
@@ -61,8 +75,8 @@ def TrainModels(yearFrom, yearTo):
 def TestModels(yearFrom, yearTo):
     print("Testowanie modelu dla lat" , yearFrom , "-", yearTo, "...\n")
     testData = allData[(yearFrom <= allData['Year']) & (allData['Year'] <= yearTo)].copy()
-    testX = testData['Year'].values
-    testValues = testData['Income_in_mln'].values
+    testX = testData[independentVariableName].values
+    testValues = testData[dependentVariableName].values
     testData['Wykładniczy ręczny'] = np.exp(testX * fit[0] + fit[1])
     testData['Wykładniczy'] = np.exp(exponentialModel.predict(testX.reshape(-1, 1)))
     testData['Potęgowy'] = np.exp(powerModel.predict(np.log(testX).reshape(-1, 1)))
@@ -73,19 +87,22 @@ def TestModels(yearFrom, yearTo):
     X2 = np.concatenate((xt1, xt2, xt3, xt4), axis=1)
     testData['Wielomianowy'] = polynomialModel.predict(X2)
     testData['Liniowy'] = linearModel.predict(testX.reshape(-1, 1))
-    testData['Error'] = testData['Income_in_mln'] - testData['Wielomianowy']
+    testData['Error'] = testData[dependentVariableName] - testData['Wielomianowy']
     testData['Error_squared'] = testData['Error'] ** 2
     print(testData)
     print()
     
-TrainModels(2009, 2015)
-TestModels(2016, 2018)
+def TestFor(variableFrom, variableTo):
+    TrainModels(2009, 2015, variableFrom, variableTo)
+    TestModels(2016, 2018)
 
-TrainModels(2009, 2017)
-TestModels(2018, 2020)
+    TrainModels(2009, 2017, variableFrom, variableTo)
+    TestModels(2018, 2020)
 
-TrainModels(2009, 2020)
-TestModels(2021, 2022)
+    TrainModels(2009, 2020, variableFrom, variableTo)
+    TestModels(2021, 2022)
+
+TestFor('Employees', 'Revenue_in_mln')
 
 
 
