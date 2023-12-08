@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
+import statsmodels.api as sm
 from sklearn.linear_model import LinearRegression
+from scipy.stats import f
 
 incomeData = pd.read_csv('Data/Income.csv')
 revenueData = pd.read_csv('Data/Revenue.csv')
@@ -12,6 +14,8 @@ allData = incomeData.copy()
 allData = pd.merge(allData, revenueData, how='outer', on='Year')
 allData = pd.merge(allData, numberOfEmployeesData, how='outer', on='Year' )
 allData = pd.merge(allData, filtredNumberOfUsersData[['Year', 'Users_in_mln']], how='outer', on='Year' )
+
+alpha = 0.05
 
 # Train model ---------------------------------------------------------------
 def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
@@ -33,14 +37,25 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     trainX = trainData[independentVariableName].values
     trainValues = trainData[dependentVariableName].values
     fit = np.polyfit(trainX, np.log(trainValues), 1)
+    
+    model = sm.OLS(trainValues, trainX).fit()
+    degreeOfFreedom1 = model.df_model # liczba zmiennych objaśniających
+    degreeOfFreedom2 = model.df_resid - 1 # liczba obserwacji - liczba zmiennych objaśniających - 1 bo w statsmodels.api nie liczy się stałej
+    print(f'Stopnie swobody: {degreeOfFreedom1}, {degreeOfFreedom2}')
+    critical_value = f.ppf(1 - alpha, degreeOfFreedom1, degreeOfFreedom2)
+    print(f'Wartość krytyczna dla alpha {alpha}: {critical_value}')
 
-    exponentialModel = LinearRegression() 
+    exponentialModel = LinearRegression()
     xForExponential = trainX.reshape(-1, 1)
     yForExponential = np.log(trainValues).reshape(-1, 1)
     exponentialModel.fit(xForExponential, yForExponential) # ln(y) = ln(a)x + ln(b) => y = a^x * b wykładniczy
     print("Model wykładniczy y = a^x * b zlinearyzowny do: ln(y) = ln(a)x + ln(b)")
     print("Współczynnik determinacji dla modelu wykładniczego R^2: ", exponentialModel.score(xForExponential, yForExponential))
     print("Współczynnik korelacji wielorakiej dla modelu wykładniczego R: ", np.sqrt(exponentialModel.score(xForExponential, yForExponential)))
+    exponentialScore = exponentialModel.score(xForExponential, yForExponential)
+    FValue = (exponentialScore / (1 - exponentialScore)) * ((len(trainX) - 2) / 1)
+    print("Wartość F dla modelu wykładniczego: ", FValue)
+
     print()
 
     powerModel = LinearRegression()
@@ -50,6 +65,9 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     print("Model potęgowy y = x^a * b zlinearyzowny do: ln(y) = a*ln(x) + ln(b)")
     print("Współczynnik determinacji dla modelu potęgowego: ", powerModel.score(xForPower, yForPower))
     print("Współczynnik korelacji wielorakiej dla modelu potęgowego: ", np.sqrt(powerModel.score(xForPower, yForPower)))
+    powerScore = powerModel.score(xForPower, yForPower)
+    FValue = (powerScore / (1 - powerScore)) * ((len(trainX) - 2) / 1)
+    print("Wartość F dla modelu potęgowego: ", FValue)
     print()
 
     polynomialModel = LinearRegression()
@@ -64,6 +82,9 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     print("Współczynnik determinacji dla modelu wielomianowego: ", polynomialModel.score(xForPolynomialModel, yForPolynomialModel))
     print("Współczynnik korleacji wielorakiej dla modelu wielomianowego: ", np.sqrt(polynomialModel.score(xForPolynomialModel, yForPolynomialModel)))
     print("Współczynniki dla modelu wielomianowego: ", polynomialModel.coef_)
+    polynomialScore = polynomialModel.score(xForPolynomialModel, yForPolynomialModel)
+    FValue = (polynomialScore / (1 - polynomialScore)) * ((len(trainX) - 2) / 1)
+    print("Wartość F dla modelu wielomianowego: ", FValue)
     print()
 
     squareModel = LinearRegression()
@@ -76,6 +97,9 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     print("Współczynnik determinacji dla modelu kwadratowego: ", squareModel.score(xForSquareModel, yForSquareModel))
     print("Współczynnik korleacji wielorakiej dla modelu kwadratowego: ", np.sqrt(squareModel.score(xForSquareModel, yForSquareModel)))
     print("Współczynniki dla modelu kwadratowego: ", squareModel.coef_)
+    squareScore = squareModel.score(xForSquareModel, yForSquareModel)
+    FValue = (squareScore / (1 - squareScore)) * ((len(trainX) - 2) / 1)
+    print("Wartość F dla modelu kwadratowego: ", FValue)
     print()
 
     linearModel = LinearRegression()
@@ -86,6 +110,9 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     print("Współczynnik determinacji dla modelu liniowego: ", linearModel.score(xForLinear, yForLinear))
     print("Współczynnik korleacji wielorakiej dla modelu liniowego: ", np.sqrt(linearModel.score(xForLinear, yForLinear)))
     print("Współczynniki dla modelu liniowego: ", linearModel.coef_)
+    linearScore = linearModel.score(xForLinear, yForLinear)
+    FValue = (linearScore / (1 - linearScore)) * ((len(trainX) - 2) / 1)
+    print("Wartość F dla modelu liniowego: ", FValue)
     print()
 
     trainData['Wykładniczy ręczny'] = np.exp(trainX * fit[0] + fit[1])
