@@ -39,7 +39,8 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     yForExponential = np.log(trainValues).reshape(-1, 1)
     exponentialModel.fit(xForExponential, yForExponential) # ln(y) = ln(a)x + ln(b) => y = a^x * b wykładniczy
     print("Model wykładniczy y = a^x * b zlinearyzowny do: ln(y) = ln(a)x + ln(b)")
-    print("Współczynnik determinacji dla modelu wykładniczego: ", exponentialModel.score(xForExponential, yForExponential))
+    print("Współczynnik determinacji dla modelu wykładniczego R^2: ", exponentialModel.score(xForExponential, yForExponential))
+    print("Współczynnik korelacji wielorakiej dla modelu wykładniczego R: ", np.sqrt(exponentialModel.score(xForExponential, yForExponential)))
     print()
 
     powerModel = LinearRegression()
@@ -48,6 +49,7 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     powerModel.fit(xForPower, yForPower) # ln(y) = a*ln(x) + ln(b) => y = x^a * b potęgowy
     print("Model potęgowy y = x^a * b zlinearyzowny do: ln(y) = a*ln(x) + ln(b)")
     print("Współczynnik determinacji dla modelu potęgowego: ", powerModel.score(xForPower, yForPower))
+    print("Współczynnik korelacji wielorakiej dla modelu potęgowego: ", np.sqrt(powerModel.score(xForPower, yForPower)))
     print()
 
     polynomialModel = LinearRegression()
@@ -60,6 +62,7 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     polynomialModel.fit(xForPolynomialModel, yForPolynomialModel) # y = ax^4 + bx^3 + cx^2 + dx + e wielomianowy
     print("Model wielomianowy y = ax^4 + bx^3 + cx^2 + dx + e")
     print("Współczynnik determinacji dla modelu wielomianowego: ", polynomialModel.score(xForPolynomialModel, yForPolynomialModel))
+    print("Współczynnik korleacji wielorakiej dla modelu wielomianowego: ", np.sqrt(polynomialModel.score(xForPolynomialModel, yForPolynomialModel)))
     print("Współczynniki dla modelu wielomianowego: ", polynomialModel.coef_)
     print()
 
@@ -71,6 +74,7 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     squareModel.fit(xForSquareModel, yForSquareModel) # y = ax^2 + bx + c kwadratowy
     print("Model kwadratowy y = ax^2 + bx + c")
     print("Współczynnik determinacji dla modelu kwadratowego: ", squareModel.score(xForSquareModel, yForSquareModel))
+    print("Współczynnik korleacji wielorakiej dla modelu kwadratowego: ", np.sqrt(squareModel.score(xForSquareModel, yForSquareModel)))
     print("Współczynniki dla modelu kwadratowego: ", squareModel.coef_)
     print()
 
@@ -80,6 +84,7 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     linearModel.fit(xForLinear, yForLinear) # y = ax + b liniowy
     print("Model liniowy y = ax + b")
     print("Współczynnik determinacji dla modelu liniowego: ", linearModel.score(xForLinear, yForLinear))
+    print("Współczynnik korleacji wielorakiej dla modelu liniowego: ", np.sqrt(linearModel.score(xForLinear, yForLinear)))
     print("Współczynniki dla modelu liniowego: ", linearModel.coef_)
     print()
 
@@ -161,7 +166,9 @@ def TestFor(variableFrom, variableTo):
     TrainModels(2009, 2020, variableFrom, variableTo)
     TestModels(2021, 2022)
 
-TestFor('Employees', 'Income_in_mln')
+#TestFor('Employees', 'Income_in_mln')
+#TestFor('Users_in_mln', 'Income_in_mln')
+TestFor('Employees', 'Revenue_in_mln')
 
 
 
