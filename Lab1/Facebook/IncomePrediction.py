@@ -38,9 +38,9 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     trainValues = trainData[dependentVariableName].values
     fit = np.polyfit(trainX, np.log(trainValues), 1)
     
-    model = sm.OLS(trainValues, trainX).fit()
+    model = sm.OLS(trainValues, sm.add_constant(trainX)).fit()
     degreeOfFreedom1 = model.df_model # liczba zmiennych objaśniających
-    degreeOfFreedom2 = model.df_resid - 1 # liczba obserwacji - liczba zmiennych objaśniających - 1 bo w statsmodels.api nie liczy się stałej
+    degreeOfFreedom2 = model.df_resid # liczba obserwacji - liczba zmiennych objaśniających - 1 bo stała
     print(f'Stopnie swobody: {degreeOfFreedom1}, {degreeOfFreedom2}')
     critical_value = f.ppf(1 - alpha, degreeOfFreedom1, degreeOfFreedom2)
     print(f'Wartość krytyczna dla alpha {alpha}: {critical_value}')
@@ -55,6 +55,9 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     exponentialScore = exponentialModel.score(xForExponential, yForExponential)
     FValue = (exponentialScore / (1 - exponentialScore)) * ((len(trainX) - 2) / 1)
     print("Wartość F dla modelu wykładniczego: ", FValue)
+    exponentialModel_statsmodels = sm.OLS(yForExponential, sm.add_constant(xForExponential)).fit()
+    print("Wartość F dla modelu wykładniczego z biblioteki statsmodel: ", exponentialModel_statsmodels.fvalue)
+    print("Wartość p-value dla modelu wykładniczego z biblioteki statsmodel: ", exponentialModel_statsmodels.f_pvalue)
 
     print()
 
@@ -68,6 +71,9 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     powerScore = powerModel.score(xForPower, yForPower)
     FValue = (powerScore / (1 - powerScore)) * ((len(trainX) - 2) / 1)
     print("Wartość F dla modelu potęgowego: ", FValue)
+    powerModel_statsmodels = sm.OLS(yForPower, sm.add_constant(xForPower)).fit()
+    print("Wartość F dla modelu potęgowego z biblioteki statsmodel: ", powerModel_statsmodels.fvalue)
+    print("Wartość p-value dla modelu potęgowego z biblioteki statsmodel: ", powerModel_statsmodels.f_pvalue)
     print()
 
     polynomialModel = LinearRegression()
@@ -85,6 +91,9 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     polynomialScore = polynomialModel.score(xForPolynomialModel, yForPolynomialModel)
     FValue = (polynomialScore / (1 - polynomialScore)) * ((len(trainX) - 2) / 1)
     print("Wartość F dla modelu wielomianowego: ", FValue)
+    polynomialModel_statsmodels = sm.OLS(yForPolynomialModel, sm.add_constant(xForPolynomialModel)).fit()
+    print("Wartość F dla modelu wielomianowego z biblioteki statsmodel: ", polynomialModel_statsmodels.fvalue)
+    print("Wartość p-value dla modelu wielomianowego z biblioteki statsmodel: ", polynomialModel_statsmodels.f_pvalue)
     print()
 
     squareModel = LinearRegression()
@@ -100,6 +109,9 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     squareScore = squareModel.score(xForSquareModel, yForSquareModel)
     FValue = (squareScore / (1 - squareScore)) * ((len(trainX) - 2) / 1)
     print("Wartość F dla modelu kwadratowego: ", FValue)
+    squareModel_statsmodels = sm.OLS(yForSquareModel, sm.add_constant(xForSquareModel)).fit()
+    print("Wartość F dla modelu kwadratowego z biblioteki statsmodel: ", squareModel_statsmodels.fvalue)
+    print("Wartość p-value dla modelu kwadratowego z biblioteki statsmodel: ", squareModel_statsmodels.f_pvalue)
     print()
 
     linearModel = LinearRegression()
@@ -113,6 +125,9 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     linearScore = linearModel.score(xForLinear, yForLinear)
     FValue = (linearScore / (1 - linearScore)) * ((len(trainX) - 2) / 1)
     print("Wartość F dla modelu liniowego: ", FValue)
+    linearModel_statsmodels = sm.OLS(yForLinear, sm.add_constant(xForLinear)).fit()
+    print("Wartość F dla modelu liniowego z biblioteki statsmodel: ", linearModel_statsmodels.fvalue)
+    print("Wartość p-value dla modelu liniowego z biblioteki statsmodel: ", linearModel_statsmodels.f_pvalue)
     print()
 
     trainData['Wykładniczy ręczny'] = np.exp(trainX * fit[0] + fit[1])
