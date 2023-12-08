@@ -19,6 +19,7 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     global exponentialModel
     global powerModel
     global polynomialModel
+    global squareModel
     global linearModel
     global independentVariableName
     global dependentVariableName
@@ -26,7 +27,7 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     independentVariableName = variableFrom
     dependentVariableName = variableTo
 
-    print("Trenowanie modelu dla lat" , yearFrom , "-", yearTo, "ze zmienną objaśniającą: ", independentVariableName, "na zminną objaśnianą: ", dependentVariableName, "...\n")
+    print(f"Trenowanie modelu dla lat {yearFrom}-{yearTo} ze zmienną objaśniającą: '{independentVariableName}' na zminną objaśnianą: '{dependentVariableName}'...\n")
     trainData = allData[(allData['Year'] >= yearFrom) & (allData['Year'] <= yearTo)].copy()
 
     trainX = trainData[independentVariableName].values
@@ -37,13 +38,17 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     xForExponential = trainX.reshape(-1, 1)
     yForExponential = np.log(trainValues).reshape(-1, 1)
     exponentialModel.fit(xForExponential, yForExponential) # ln(y) = ln(a)x + ln(b) => y = a^x * b wykładniczy
+    print("Model wykładniczy y = a^x * b zlinearyzowny do: ln(y) = ln(a)x + ln(b)")
     print("Współczynnik determinacji dla modelu wykładniczego: ", exponentialModel.score(xForExponential, yForExponential))
+    print()
 
     powerModel = LinearRegression()
     xForPower = np.log(trainX).reshape(-1, 1)
     yForPower = np.log(trainValues).reshape(-1, 1)
     powerModel.fit(xForPower, yForPower) # ln(y) = a*ln(x) + ln(b) => y = x^a * b potęgowy
+    print("Model potęgowy y = x^a * b zlinearyzowny do: ln(y) = a*ln(x) + ln(b)")
     print("Współczynnik determinacji dla modelu potęgowego: ", powerModel.score(xForPower, yForPower))
+    print()
 
     polynomialModel = LinearRegression()
     x1 = trainX.reshape(-1, 1)
@@ -53,14 +58,30 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     xForPolynomialModel = np.concatenate((x1, x2, x3, x4), axis=1)
     yForPolynomialModel = trainValues.reshape(-1, 1)
     polynomialModel.fit(xForPolynomialModel, yForPolynomialModel) # y = ax^4 + bx^3 + cx^2 + dx + e wielomianowy
+    print("Model wielomianowy y = ax^4 + bx^3 + cx^2 + dx + e")
     print("Współczynnik determinacji dla modelu wielomianowego: ", polynomialModel.score(xForPolynomialModel, yForPolynomialModel))
     print("Współczynniki dla modelu wielomianowego: ", polynomialModel.coef_)
+    print()
+
+    squareModel = LinearRegression()
+    x1 = trainX.reshape(-1, 1)
+    x2 = np.power(trainX, 2).reshape(-1, 1)
+    xForSquareModel = np.concatenate((x1, x2), axis=1)
+    yForSquareModel = trainValues.reshape(-1, 1)
+    squareModel.fit(xForSquareModel, yForSquareModel) # y = ax^2 + bx + c kwadratowy
+    print("Model kwadratowy y = ax^2 + bx + c")
+    print("Współczynnik determinacji dla modelu kwadratowego: ", squareModel.score(xForSquareModel, yForSquareModel))
+    print("Współczynniki dla modelu kwadratowego: ", squareModel.coef_)
+    print()
 
     linearModel = LinearRegression()
     xForLinear = trainX.reshape(-1, 1)
     yForLinear = trainValues.reshape(-1, 1)
     linearModel.fit(xForLinear, yForLinear) # y = ax + b liniowy
+    print("Model liniowy y = ax + b")
     print("Współczynnik determinacji dla modelu liniowego: ", linearModel.score(xForLinear, yForLinear))
+    print("Współczynniki dla modelu liniowego: ", linearModel.coef_)
+    print()
 
     trainData['Wykładniczy ręczny'] = np.exp(trainX * fit[0] + fit[1])
     trainData['Wykładniczy'] = np.exp(exponentialModel.predict(xForExponential))
@@ -73,22 +94,60 @@ def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     print()
 
 def TestModels(yearFrom, yearTo):
-    print("Testowanie modelu dla lat" , yearFrom , "-", yearTo, "...\n")
+    print("Testowanie modelu (wyniki błędu dla różnych modeli) dla lat" , yearFrom , "-", yearTo, "...\n")
     testData = allData[(yearFrom <= allData['Year']) & (allData['Year'] <= yearTo)].copy()
     testX = testData[independentVariableName].values
-    testValues = testData[dependentVariableName].values
+    meanSquareErrorsForModels = []
+
     testData['Wykładniczy ręczny'] = np.exp(testX * fit[0] + fit[1])
+    testData['Wykładniczy ręczny błąd'] = testData['Wykładniczy ręczny'] - testData[dependentVariableName]
+    meanSquareError = np.mean(testData['Wykładniczy ręczny błąd'] ** 2)
+    print("Średni błąd kwadratowy dla modelu wykładniczego ręcznego: ", meanSquareError)
+    meanSquareErrorsForModels.append(("wykładniczy ręczny",meanSquareError))
+
     testData['Wykładniczy'] = np.exp(exponentialModel.predict(testX.reshape(-1, 1)))
+    testData['Wykładniczy błąd'] = testData['Wykładniczy'] - testData[dependentVariableName]
+    meanSquareError = np.mean(testData['Wykładniczy błąd'] ** 2)
+    print("Średni błąd kwadratowy dla modelu wykładniczego: ", meanSquareError)
+    meanSquareErrorsForModels.append(("wykładniczy",meanSquareError))
+
     testData['Potęgowy'] = np.exp(powerModel.predict(np.log(testX).reshape(-1, 1)))
+    testData['Potęgowy błąd'] = testData['Potęgowy'] - testData[dependentVariableName]
+    meanSquareError = np.mean(testData['Potęgowy błąd'] ** 2)
+    print("Średni błąd kwadratowy dla modelu potęgowego: ", meanSquareError)
+    meanSquareErrorsForModels.append(("potęgowy",meanSquareError))
+
     xt1 = testX.reshape(-1, 1)
     xt2 = np.power(testX, 2).reshape(-1, 1)
     xt3 = np.power(testX, 3).reshape(-1, 1)
     xt4 = np.power(testX, 4).reshape(-1, 1)
     X2 = np.concatenate((xt1, xt2, xt3, xt4), axis=1)
     testData['Wielomianowy'] = polynomialModel.predict(X2)
+    testData['Wielomianowy błąd'] = testData['Wielomianowy'] - testData[dependentVariableName]
+    meanSquareError = np.mean(testData['Wielomianowy błąd'] ** 2)
+    print("Średni błąd kwadratowy dla modelu wielomianowego: ", meanSquareError)
+    meanSquareErrorsForModels.append(("wielomianowy",meanSquareError))
+
+    xt1 = testX.reshape(-1, 1)
+    xt2 = np.power(testX, 2).reshape(-1, 1)
+    X2 = np.concatenate((xt1, xt2), axis=1)
+    testData['Kwadratowy'] = squareModel.predict(X2)
+    testData['Kwadratowy błąd'] = testData['Kwadratowy'] - testData[dependentVariableName]
+    meanSquareError = np.mean(testData['Kwadratowy błąd'] ** 2)
+    print("Średni błąd kwadratowy dla modelu kwadratowego: ", meanSquareError)
+    meanSquareErrorsForModels.append(("kwadratowy",meanSquareError))
+
     testData['Liniowy'] = linearModel.predict(testX.reshape(-1, 1))
-    testData['Error'] = testData[dependentVariableName] - testData['Wielomianowy']
-    testData['Error_squared'] = testData['Error'] ** 2
+    testData['Liniowy błąd'] = testData['Liniowy'] - testData[dependentVariableName]
+    meanSquareError = np.mean(testData['Liniowy błąd'] ** 2)
+    print("Średni błąd kwadratowy dla modelu liniowego: ", meanSquareError)
+    meanSquareErrorsForModels.append(("liniowy",meanSquareError))
+
+    print()
+    bestModel = min(meanSquareErrorsForModels, key=lambda x: x[1])
+    print(f"Najlepszy model: {bestModel[0]}, z błędem średnio kwadratowym: {bestModel[1]}")
+
+    print()
     print(testData)
     print()
     
@@ -102,7 +161,7 @@ def TestFor(variableFrom, variableTo):
     TrainModels(2009, 2020, variableFrom, variableTo)
     TestModels(2021, 2022)
 
-TestFor('Employees', 'Revenue_in_mln')
+TestFor('Employees', 'Income_in_mln')
 
 
 
