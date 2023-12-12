@@ -3,6 +3,7 @@ import numpy as np
 import statsmodels.api as sm
 from sklearn.linear_model import LinearRegression
 from scipy.stats import f
+import matplotlib.pyplot as plt
 
 incomeData = pd.read_csv('Data/Income.csv')
 revenueData = pd.read_csv('Data/Revenue.csv')
@@ -150,18 +151,21 @@ def TestModels(yearFrom, yearTo):
     testData['Wykładniczy ręczny błąd'] = testData['Wykładniczy ręczny'] - testData[dependentVariableName]
     meanSquareError = np.mean(testData['Wykładniczy ręczny błąd'] ** 2)
     print("Średni błąd kwadratowy dla modelu wykładniczego ręcznego: ", meanSquareError)
+    print("Średni absolutny błąd procentowy: ", np.mean(np.abs(testData['Wykładniczy ręczny błąd'] / testData[dependentVariableName])) * 100, "%")
     meanSquareErrorsForModels.append(("wykładniczy ręczny",meanSquareError))
 
     testData['Wykładniczy'] = np.exp(exponentialModel.predict(testX.reshape(-1, 1)))
     testData['Wykładniczy błąd'] = testData['Wykładniczy'] - testData[dependentVariableName]
     meanSquareError = np.mean(testData['Wykładniczy błąd'] ** 2)
     print("Średni błąd kwadratowy dla modelu wykładniczego: ", meanSquareError)
+    print("Średni absolutny błąd procentowy: ", np.mean(np.abs(testData['Wykładniczy błąd'] / testData[dependentVariableName])) * 100, "%")
     meanSquareErrorsForModels.append(("wykładniczy",meanSquareError))
 
     testData['Potęgowy'] = np.exp(powerModel.predict(np.log(testX).reshape(-1, 1)))
     testData['Potęgowy błąd'] = testData['Potęgowy'] - testData[dependentVariableName]
     meanSquareError = np.mean(testData['Potęgowy błąd'] ** 2)
     print("Średni błąd kwadratowy dla modelu potęgowego: ", meanSquareError)
+    print("Średni absolutny błąd procentowy: ", np.mean(np.abs(testData['Potęgowy błąd'] / testData[dependentVariableName])) * 100, "%")
     meanSquareErrorsForModels.append(("potęgowy",meanSquareError))
 
     xt1 = testX.reshape(-1, 1)
@@ -173,6 +177,7 @@ def TestModels(yearFrom, yearTo):
     testData['Wielomianowy błąd'] = testData['Wielomianowy'] - testData[dependentVariableName]
     meanSquareError = np.mean(testData['Wielomianowy błąd'] ** 2)
     print("Średni błąd kwadratowy dla modelu wielomianowego: ", meanSquareError)
+    print("Średni absolutny błąd procentowy: ", np.mean(np.abs(testData['Wielomianowy błąd'] / testData[dependentVariableName])) * 100, "%")
     meanSquareErrorsForModels.append(("wielomianowy",meanSquareError))
 
     xt1 = testX.reshape(-1, 1)
@@ -182,12 +187,14 @@ def TestModels(yearFrom, yearTo):
     testData['Kwadratowy błąd'] = testData['Kwadratowy'] - testData[dependentVariableName]
     meanSquareError = np.mean(testData['Kwadratowy błąd'] ** 2)
     print("Średni błąd kwadratowy dla modelu kwadratowego: ", meanSquareError)
+    print("Średni absolutny błąd procentowy: ", np.mean(np.abs(testData['Kwadratowy błąd'] / testData[dependentVariableName])) * 100, "%")
     meanSquareErrorsForModels.append(("kwadratowy",meanSquareError))
 
     testData['Liniowy'] = linearModel.predict(testX.reshape(-1, 1))
     testData['Liniowy błąd'] = testData['Liniowy'] - testData[dependentVariableName]
     meanSquareError = np.mean(testData['Liniowy błąd'] ** 2)
     print("Średni błąd kwadratowy dla modelu liniowego: ", meanSquareError)
+    print("Średni absolutny błąd procentowy: ", np.mean(np.abs(testData['Liniowy błąd'] / testData[dependentVariableName])) * 100, "%")
     meanSquareErrorsForModels.append(("liniowy",meanSquareError))
 
     print()
@@ -202,15 +209,48 @@ def TestFor(variableFrom, variableTo):
     TrainModels(2009, 2015, variableFrom, variableTo)
     TestModels(2016, 2018)
 
+    showData(variableFrom, variableTo, 2009, 2018)
+
     TrainModels(2009, 2017, variableFrom, variableTo)
     TestModels(2018, 2020)
+
+    showData(variableFrom, variableTo, 2009, 2020)
 
     TrainModels(2009, 2020, variableFrom, variableTo)
     TestModels(2021, 2022)
 
+    showData(variableFrom, variableTo, 2009, 2022)
+
+
+def showData(variableFrom, variableTo, yearFrom, yearTo):
+    df = allData[(allData['Year'] >= yearFrom) & (allData['Year'] <= yearTo)].copy()
+
+    plt.plot(df[variableFrom], df[variableTo], 'o')
+    plt.plot(df[variableFrom], np.exp(powerModel.predict(np.log(df[variableFrom].values.reshape(-1, 1)))), '-o')
+    plt.plot(df[variableFrom], np.exp(exponentialModel.predict(df[variableFrom].values.reshape(-1, 1))), '-o')
+    plt.plot(df[variableFrom], polynomialModel.predict(np.concatenate((df[variableFrom].values.reshape(-1, 1), np.power(df[variableFrom].values.reshape(-1, 1), 2).reshape(-1, 1), np.power(df[variableFrom].values.reshape(-1, 1), 3).reshape(-1, 1), np.power(df[variableFrom].values.reshape(-1, 1), 4).reshape(-1, 1)), axis=1)), '-o')
+    plt.plot(df[variableFrom], squareModel.predict(np.concatenate((df[variableFrom].values.reshape(-1, 1), np.power(df[variableFrom].values.reshape(-1, 1), 2).reshape(-1, 1)), axis=1)), '-o')
+    plt.plot(df[variableFrom], linearModel.predict(df[variableFrom].values.reshape(-1, 1)), '-o')
+
+
+    plt.xlabel(variableFrom)
+    plt.ylabel(variableTo)
+    plt.title(f'Predykcja dla lat {yearFrom}-{yearTo}')
+    plt.grid(True)
+    plt.legend(['Dane', 
+                'Kwadratowy', 
+                'Wykładniczy', 
+                'Wielomianowy', 
+                'Potęgowy', 
+                'Liniowy'])
+
+
+    plt.show()
+
+#TestFor('Employees', 'Revenue_in_mln')
+TestFor('Users_in_mln', 'Revenue_in_mln')
 #TestFor('Employees', 'Income_in_mln')
-#TestFor('Users_in_mln', 'Income_in_mln')
-TestFor('Employees', 'Revenue_in_mln')
+#TestFor('Year', 'Revenue_in_mln')
 
 
 
