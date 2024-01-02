@@ -18,6 +18,110 @@ allData = pd.merge(allData, filtredNumberOfUsersData[['Year', 'Users_in_mln']], 
 
 alpha = 0.05
 
+def ShowData():
+    plt.plot(allData['Year'], allData['Income_in_mln'], '-o')
+
+    plt.xlabel('Rok')
+    plt.ylabel('Przychód [mln]')
+    plt.title('Wykres danych z pliku CSV')
+    plt.grid(True)
+    plt.legend(['Dane'])
+
+    plt.show()
+
+    plt.plot(allData['Year'], allData['Revenue_in_mln'], '-o')
+
+    plt.xlabel('Rok')
+    plt.ylabel('Dochód [mln]')
+    plt.title('Wykres danych z pliku CSV')
+    plt.grid(True)
+    plt.legend(['Dane'])
+
+    plt.show()
+
+    plt.plot(allData['Year'], allData['Employees'], '-o')
+
+    plt.xlabel('Rok')
+    plt.ylabel('Pracownicy')
+    plt.title('Wykres danych z pliku CSV')
+    plt.grid(True)
+    plt.legend(['Dane'])
+
+    plt.show()
+    
+    plt.plot(allData['Year'], allData['Users_in_mln'], '-o')
+
+    plt.xlabel('Rok')
+    plt.ylabel('Użytkownicy [mln]')
+    plt.title('Wykres danych z pliku CSV')
+    plt.grid(True)
+    plt.legend(['Dane'])
+
+    plt.show()
+
+    plt.plot(allData['Users_in_mln'], allData['Income_in_mln'], '-o')
+
+    plt.xlabel('Użytkownicy [mln]')
+    plt.ylabel('Przychód [mln]')
+    plt.title('Wykres danych z pliku CSV')
+    plt.grid(True)
+    plt.legend(['Dane'])
+
+    plt.show()
+
+    plt.plot(allData['Users_in_mln'], allData['Revenue_in_mln'], '-o')
+
+    plt.xlabel('Użytkownicy [mln]')
+    plt.ylabel('Dochód [mln]')
+    plt.title('Wykres danych z pliku CSV')
+    plt.grid(True)
+    plt.legend(['Dane'])
+
+    plt.show()
+
+    plt.plot(allData['Users_in_mln'], allData['Employees'], '-o')
+
+    plt.xlabel('Użytkownicy [mln]')
+    plt.ylabel('Pracownicy')
+    plt.title('Wykres danych z pliku CSV')
+    plt.grid(True)
+    plt.legend(['Dane'])
+
+    plt.show()
+
+    plt.plot(allData['Income_in_mln'], allData['Revenue_in_mln'], '-o')
+
+    plt.xlabel('Przychód [mln]')
+    plt.ylabel('Dochód [mln]')
+    plt.title('Wykres danych z pliku CSV')
+    plt.grid(True)
+    plt.legend(['Dane'])
+
+    plt.show()
+
+    plt.plot(allData['Income_in_mln'], allData['Employees'], '-o')
+
+    plt.xlabel('Przychód [mln]')
+    plt.ylabel('Pracownicy')
+    plt.title('Wykres danych z pliku CSV')
+    plt.grid(True)
+    plt.legend(['Dane'])
+
+    plt.show()
+
+    plt.plot(allData['Revenue_in_mln'], allData['Employees'], '-o')
+
+    plt.xlabel('Dochód [mln]')
+    plt.ylabel('Pracownicy')
+    plt.title('Wykres danych z pliku CSV')
+    plt.grid(True)
+    plt.legend(['Dane'])
+
+    plt.show()
+
+
+
+
 # Train model ---------------------------------------------------------------
 def TrainModels(yearFrom, yearTo, variableFrom, variableTo):
     global fit
@@ -225,30 +329,32 @@ def TestFor(variableFrom, variableTo):
 def showData(variableFrom, variableTo, yearFrom, yearTo):
     df = allData[(allData['Year'] >= yearFrom) & (allData['Year'] <= yearTo)].copy()
 
-    plt.plot(df[variableFrom], df[variableTo], 'o')
     plt.plot(df[variableFrom], np.exp(powerModel.predict(np.log(df[variableFrom].values.reshape(-1, 1)))), '-o')
     plt.plot(df[variableFrom], np.exp(exponentialModel.predict(df[variableFrom].values.reshape(-1, 1))), '-o')
     plt.plot(df[variableFrom], polynomialModel.predict(np.concatenate((df[variableFrom].values.reshape(-1, 1), np.power(df[variableFrom].values.reshape(-1, 1), 2).reshape(-1, 1), np.power(df[variableFrom].values.reshape(-1, 1), 3).reshape(-1, 1), np.power(df[variableFrom].values.reshape(-1, 1), 4).reshape(-1, 1)), axis=1)), '-o')
     plt.plot(df[variableFrom], squareModel.predict(np.concatenate((df[variableFrom].values.reshape(-1, 1), np.power(df[variableFrom].values.reshape(-1, 1), 2).reshape(-1, 1)), axis=1)), '-o')
     plt.plot(df[variableFrom], linearModel.predict(df[variableFrom].values.reshape(-1, 1)), '-o')
+    plt.plot(df[variableFrom], df[variableTo], 'x',  markersize=8, color='black')
 
 
     plt.xlabel(variableFrom)
     plt.ylabel(variableTo)
     plt.title(f'Predykcja dla lat {yearFrom}-{yearTo}')
     plt.grid(True)
-    plt.legend(['Dane', 
-                'Kwadratowy', 
+    plt.legend(['Potęgowy', 
                 'Wykładniczy', 
                 'Wielomianowy', 
-                'Potęgowy', 
-                'Liniowy'])
+                'Kwadratowy', 
+                'Liniowy',
+                'Dane'])
 
 
     plt.show()
 
-#TestFor('Employees', 'Revenue_in_mln')
+ShowData()
+
 TestFor('Users_in_mln', 'Revenue_in_mln')
+#TestFor('Users_in_mln', 'Employees')
 #TestFor('Employees', 'Income_in_mln')
 #TestFor('Year', 'Revenue_in_mln')
 

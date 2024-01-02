@@ -15,6 +15,7 @@ def showData():
     coefficients = [model.coef_[0], model.intercept_]
     trendLine = np.polyval(coefficients, showingData['Timestamp'])
     plt.plot(showingData['Date'], trendLine, color='red')
+    plt.xticks(showingData['Date'][::10])
 
     plt.show()
 
