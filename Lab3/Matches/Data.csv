@@ -1,0 +1,11 @@
+Nr,SilaWiatru,Zachmurzenie,OdczuwalnaTemperatura,ZagranoMecz
+1,silny,pochmurnie,zimno,nie
+2,silny,pochmurnie,ciepło,nie
+3,brak,słonecznie,ciepło,tak
+4,brak,słonecznie,gorąco,nie
+5,słaby,pochmurnie,gorąco,tak
+6,słaby,słonecznie,ciepło,tak
+7,brak,pochmurnie,zimno,nie
+8,silny,słonecznie,zimno,tak
+9,brak,pochmurnie,gorąco,tak
+10,silny,pochmurnie,ciepło,tak
