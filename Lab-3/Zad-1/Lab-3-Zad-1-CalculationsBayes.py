@@ -2,7 +2,7 @@ import pandas as pd
 
 print()
 
-allData = pd.read_csv('./Lab3/Matches/Data.csv')
+allData = pd.read_csv('./Lab-3/Zad-1/Lab-3-Zad-1-Data.csv')
 # print('Wszystkie dane:')
 # print(allData)
 # print()

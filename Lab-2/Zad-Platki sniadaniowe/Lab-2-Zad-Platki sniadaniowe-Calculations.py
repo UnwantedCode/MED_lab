@@ -5,7 +5,7 @@ from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
-allData = pd.read_csv('./Lab2/Cereals/Data.csv')
+allData = pd.read_csv('./Lab-2/Zad-Platki sniadaniowe/Lab-2-Zad-Platki sniadaniowe-Data.csv')
 print('Wszystkie dane: ')
 with pd.option_context('display.max_rows', None):
     print(allData)

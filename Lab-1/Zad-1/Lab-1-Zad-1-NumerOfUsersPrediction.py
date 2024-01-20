@@ -4,7 +4,7 @@ import seaborn as sns
 from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
 
-allData = pd.read_csv('Data/NumberOfUsers.csv')
+allData = pd.read_csv('./Lab-1/Zad-1/Lab-1-Zad-1-NumberOfUsers.csv')
 
 def showData():
     showingData = allData.copy()

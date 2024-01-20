@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 
 print()
 
-allData = pd.read_csv('./Lab3/Spam/Data.csv')
+allData = pd.read_csv('./Lab-3/Zad-2/Lab-3-Zad-2-Data.csv')
 print('Wszystkie dane:')
 print(allData)
 print()

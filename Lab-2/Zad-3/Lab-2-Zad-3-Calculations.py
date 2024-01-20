@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 
-allData = pd.read_csv('./Lab2/OS/Data.csv')
+allData = pd.read_csv('./Lab-2/Zad-3/Lab-2-Zad-3-Data.csv')
 allData['Cumulated_number_of_errors'] = allData['Number_of_errors'].cumsum()
 allData['temp_y_prim'] = allData['Number_of_errors'] / allData['Cumulated_number_of_errors'] 
 print('Dane')
@@ -54,7 +54,7 @@ print('Błąd średniokwadratowy dla regresji logistycznej: ', meanSquaredErrorF
 
 def ShowCumulatedNumberOfErrors():
     plt.plot(allData['Month_number'], allData['Cumulated_number_of_errors'], c='r')
-    #plt.plot(allData['Month_number'], k / (1 + b * np.exp(-a * allData['Month_number'])), c='b')
+    plt.plot(allData['Month_number'], k / (1 + b * np.exp(-a * allData['Month_number'])), c='b')
     plt.plot(allData['Month_number'], linearModel.predict(allData['Month_number'].values.reshape(-1, 1)), c='g')
 
     plt.xlabel('Nr miesiąca')

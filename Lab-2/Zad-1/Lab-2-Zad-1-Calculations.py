@@ -9,7 +9,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 #M - Marriage
 #W - Free
 
-allData = pd.read_csv('./Lab2/Marriage/Data.csv')
+allData = pd.read_csv('./Lab-2/Zad-1/Lab-2-Zad-1-Data.csv')
 print('Wszystkie dane: ')
 print(allData)
 print()

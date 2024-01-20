@@ -1,7 +1,7 @@
 # using kNN
 import pandas as pd
 
-data = pd.read_csv('./Lab3/Matches/Data.csv')
+data = pd.read_csv('./Lab-3/Zad-1/Lab-3-Zad-1-Data.csv')
 
 data['SilaWiatruWartosc'] = data['SilaWiatru'].map({'silny': 1, 'słaby': 0.5, 'brak': 0})
 data['ZachmurzenieWartosc'] = data['Zachmurzenie'].map({'słonecznie': 0, 'pochmurnie': 1})

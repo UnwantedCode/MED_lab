@@ -5,10 +5,10 @@ from sklearn.linear_model import LinearRegression
 from scipy.stats import f
 import matplotlib.pyplot as plt
 
-incomeData = pd.read_csv('Data/Income.csv')
-revenueData = pd.read_csv('Data/Revenue.csv')
-numberOfEmployeesData = pd.read_csv('Data/NumberOfEmployees.csv')
-numberOfUsersData = pd.read_csv('Data/NumberOfUsers.csv')
+incomeData = pd.read_csv('./Lab-1/Zad-1/Lab-1-Zad-1-Income.csv')
+revenueData = pd.read_csv('./Lab-1/Zad-1/Lab-1-Zad-1-Revenue.csv')
+numberOfEmployeesData = pd.read_csv('./Lab-1/Zad-1/Lab-1-Zad-1-NumberOfEmployees.csv')
+numberOfUsersData = pd.read_csv('./Lab-1/Zad-1/Lab-1-Zad-1-NumberOfUsers.csv')
 filtredNumberOfUsersData = numberOfUsersData[numberOfUsersData['Quarter'] == 4][['Year', 'Users_in_mln']].copy()
 
 allData = incomeData.copy()

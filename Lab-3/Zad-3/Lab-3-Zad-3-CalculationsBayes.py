@@ -6,13 +6,13 @@ def preparePost(post):
     normalizedPost = ' ' + post
     return normalizedPost.upper().replace('#', ' ').replace('@', ' ').replace(',', ' ').replace('"', ' ').replace('?', ' ').replace('!', ' ').replace('.', ' ').replace(':', ' ').replace(';', ' ').replace(' - ', ' ').replace('&', ' ').replace('(', ' ').replace(')', ' ').replace('‘', ' ').replace('’', ' ').replace("//", ' ').replace("'RE ", ' ').replace(" TO ", ' ').replace(" A ", ' ').replace(" WITH ", ' ').replace(" THE ", ' ').replace(" OF ", ' ').replace(" IN ", ' ').replace(" AND ", ' ').replace(" FOR ", ' ').replace(" ON ", ' ').replace(" IS ", ' ').replace(" ARE ", ' ').replace(" I ", ' ').replace(" OR ", ' ').replace("'VE ", ' ').replace("'D ", ' ').replace(" IT ", ' ').replace(" MY ", ' ').replace(" YOU ", ' ').replace(" ME ", ' ').replace(" HE ", ' ').replace(" SHE ", ' ').replace(" WE ", ' ').replace(" THEY ", ' ').replace(" OUR ", ' ').replace(" YOURS ", ' ').replace(" HIS ", ' ').replace(" HERS ", ' ').replace(" THEIR ", ' ').replace(" BY ", ' ').replace(" FROM ", ' ').replace(" AS ", ' ').replace(" AT ", ' ').replace(" THAT ", ' ').replace(" HAVE ", ' ').replace(" HAS ", ' ').replace(" IT ", ' ').replace(" EMAIL ", ' ').replace(" BUT ", ' ').replace(" NOT ", ' ').replace(" THIS ", ' ').replace(" SO ", ' ').replace(" IF ", ' ').replace(" AN ", ' ').replace(" ALL ", ' ').replace(" ABOUT ", ' ').replace(" WILL ", ' ').replace(" BE ", ' ').replace(" CAN ", ' ').replace(" MORE ", ' ').replace(" THAN ", ' ').replace(" WHEN ", ' ').replace(" WHAT ", ' ').replace(" HOW ", ' ').replace(" WHERE ", ' ').replace(" WHY ", ' ').replace(" HI ", ' ').replace(" NO ", ' ').replace("HTTP", '').replace("YOU'" , '').replace("’S", '').replace("DON'T", '').replace(" HERE ", ' ').replace(' I ', ' ').replace("I'D", '').replace("IT'S", '').replace("I'M", '').replace(" US ", ' ').replace(' JUST ', ' ').replace(' LIKE ', ' ').replace("...", ' ').replace("…", ' ').replace(" THERE ", ' ').replace(' YOUR ', ' ').replace(' u ', ' ').replace(' might ', ' ').replace(" DID ", ' ').replace(" DIDN'T ", ' ').replace(' LOOK ', ' ').replace(' LOOKS ', ' ').replace(' LOVE ', ' ').replace(' MANDRILL ' , ' ').replace('ING ', ' ').replace("N'T ", ' ').replace(' DO ', ' ').replace(' DOES ', ' ').replace(' BEEN ', ' ').replace(' GET ', ' ').replace(' GETS ', ' ').replace(' BY ', ' ').replace(' GOOD ', ' ').replace(' COME ', ' ').replace(' U ', ' ').replace(' SOME ', ' ').replace(" THAT'S ", ' ')
 
-mandrillPosts = pd.read_excel('./Lab3/Mandrill/Data.xlsx', sheet_name='dot. aplikacji Mandrill')
+mandrillPosts = pd.read_excel('./Lab-3/Zad-3/Lab-3-Zad-3-Data.xlsx', sheet_name='dot. aplikacji Mandrill')
 mandrillPosts['IsMandrill'] = 'yes'
 # print('Mandrill:')
 # print(mandrillPosts)
 # print()
 
-notMandrillPosts = pd.read_excel('./Lab3/Mandrill/Data.xlsx', sheet_name='dot. innych')
+notMandrillPosts = pd.read_excel('./Lab-3/Zad-3/Lab-3-Zad-3-Data.xlsx', sheet_name='dot. innych')
 notMandrillPosts['IsMandrill'] = 'no'
 # print('Nie Mandrill:')
 # print(notMandrillPosts)
@@ -148,14 +148,14 @@ print()
 
 wordsInMandrillCount = mandrillPosts.apply(preparePost).str.split(expand=True).stack().value_counts()
 wordsInMandrillCountDf = pd.DataFrame(wordsInMandrillCount, columns=['count'])
-wordsInMandrillCountDf.to_csv('./Lab3/Mandrill/wordsInMandrillCount.csv')
+wordsInMandrillCountDf.to_csv('./Lab-3/Zad-3/Lab-3-Zad-3-wordsInMandrillCount.csv')
 # print('Liczba slow w mandrillach:')
 # print(wordsInMandrillCountDf)
 # print()
 
 wordsInNotMandrillCount = notMandrillPosts.apply(preparePost).str.split(expand=True).stack().value_counts()
 wordsInNotMandrillCountDf = pd.DataFrame(wordsInNotMandrillCount, columns=['count'])
-wordsInNotMandrillCountDf.to_csv('./Lab3/Mandrill/wordsInNotMandrillCount.csv')
+wordsInNotMandrillCountDf.to_csv('./Lab-3/Zad-3/Lab-3-Zad-3-wordsInNotMandrillCount.csv')
 # print('Liczba slow w nie mandrillach:')
 # print(wordsInNotMandrillCountDf)
 # print()
