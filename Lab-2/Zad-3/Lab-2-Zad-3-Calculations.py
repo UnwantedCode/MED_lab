@@ -12,7 +12,7 @@ print('Dane')
 print(allData)
 print()
 
-x_train, x_test, y_train, y_test = train_test_split(allData[['Month_number', 'Number_of_errors', 'Cumulated_number_of_errors', 'temp_y_prim']], allData['Cumulated_number_of_errors'], test_size=0.2, random_state=42)
+x_train, x_test, y_train, y_test = train_test_split(allData[['Month_number', 'Number_of_errors', 'Cumulated_number_of_errors', 'temp_y_prim']], allData['Cumulated_number_of_errors'], test_size=0.01, random_state=42)
 
 print(x_train)
 print()
